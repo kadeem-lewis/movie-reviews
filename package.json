@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "start": "turbo start",
+    "dev": "turbo dev"
+  },
   "dependencies": {
     "turbo": "^2.2.3"
   },
