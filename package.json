@@ -6,8 +6,8 @@
     "start": "turbo start",
     "dev": "turbo dev"
   },
-  "dependencies": {
+  "packageManager": "pnpm@9.12.2",
+  "devDependencies": {
     "turbo": "^2.2.3"
-  },
-  "packageManager": "pnpm@9.12.2"
+  }
 }
