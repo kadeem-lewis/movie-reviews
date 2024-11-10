@@ -1,4 +1,7 @@
 {
+  "name": "movie-reviews",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "start": "turbo start",
     "dev": "turbo dev"
