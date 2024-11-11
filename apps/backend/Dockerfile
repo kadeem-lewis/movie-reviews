@@ -37,4 +37,17 @@ RUN adduser --system --uid 1001 expressjs
 USER expressjs
 COPY --from=installer /app .
 
+# Build arguments (passed from GitHub Actions)
+ARG MOVIEREVIEWS_DB_URI
+ARG MOVIEWREVIEWS_NS
+ARG PORT
+
+# Set environment variables for runtime using the arguments
+ENV MOVIEREVIEWS_DB_URI=${MOVIEREVIEWS_DB_URI}
+ENV MOVIEWREVIEWS_NS=${MOVIEWREVIEWS_NS}
+ENV PORT=${PORT}
+
+# Expose the port specified in the environment variable, defaulting to 3000
+EXPOSE ${PORT:-3001}
+
 CMD ["node", "apps/backend/index.js"]
