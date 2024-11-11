@@ -28,6 +28,8 @@ RUN pnpm install
 # Copy the full workspace
 COPY --from=builder /app/out/full/ .
 
+RUN pnpm turbo build --filter=@movie-reviews/frontend
+
 FROM base AS runner
 WORKDIR /app
 
