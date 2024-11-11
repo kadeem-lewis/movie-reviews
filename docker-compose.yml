@@ -1,0 +1,32 @@
+services:
+  web:
+    container_name: web
+    build:
+      context: .
+      dockerfile: ./apps/frontend/Dockerfile
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
+    networks:
+      - app_network
+    env_file:
+      - ./apps/frontend/.env
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: ./apps/backend/Dockerfile
+    restart: always
+    ports:
+      - 3001:3001
+    networks:
+      - app_network
+    env_file:
+      - ./apps/backend/.env
+
+# Define a network, which allows containers to communicate
+# with each other, by using their container name as a hostname
+networks:
+  app_network:
