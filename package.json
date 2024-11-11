@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "turbo start",
-    "dev": "turbo dev"
+    "dev": "turbo dev",
+    "build": "turbo build"
   },
   "packageManager": "pnpm@9.12.2",
   "devDependencies": {
