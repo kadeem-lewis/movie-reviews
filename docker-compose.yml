@@ -25,6 +25,7 @@ services:
 
   caddy:
     container_name: caddy
+    image: caddy/caddy:latest
     ports:
       - 80:80
       - 443:443
