@@ -1,29 +1,29 @@
-{$DOMAIN_NAME:invalid} {
+moviereviews.randomr.xyz {
+    encode gzip
     reverse_proxy frontend:80
 }
 
-www.{$DOMAIN_NAME:invalid} {
-	redir https://{$DOMAIN_NAME:invalid}{uri} permanent
+www.moviereviews.randomr.xyz {
+    redir https.moviereviews.randomr.xyz {uri} permanent
 }
 
-api.{$DOMAIN_NAME:invalid} {
+api.moviereviews.randomr.xyz {
     reverse_proxy api:3001
 
-	 header {
+    header {
         -X-Powered-By
         -Server
 
-        # enable HSTS
-        Strict-Transport-Security max-age=31536000;
+        # Enable HSTS
+        Strict-Transport-Security "max-age=31536000"
 
-        # disable clients from sniffing the media type
-        X-Content-Type-Options nosniff
+        # Disable clients from sniffing the media type
+        X-Content-Type-Options "nosniff"
 
-        # clickjacking protection
-        X-Frame-Options DENY
+        # Clickjacking protection
+        X-Frame-Options "DENY"
 
         # XSS Protection
         X-XSS-Protection "1; mode=block"
     }
-
 }
