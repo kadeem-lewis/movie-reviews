@@ -1,0 +1,30 @@
+{$DOMAIN_NAME:invalid} {
+    encode gzip
+    reverse_proxy frontend:80
+}
+
+www.{$DOMAIN_NAME:invalid} {
+	redir https://{$DOMAIN_NAME:invalid}{uri} permanent
+}
+
+api.{$DOMAIN_NAME:invalid} {
+    reverse_proxy api:3001
+
+	 header {
+        -X-Powered-By
+        -Server
+
+        # enable HSTS
+        Strict-Transport-Security max-age=31536000;
+
+        # disable clients from sniffing the media type
+        X-Content-Type-Options nosniff
+
+        # clickjacking protection
+        X-Frame-Options DENY
+
+        # XSS Protection
+        X-XSS-Protection "1; mode=block"
+    }
+
+}
