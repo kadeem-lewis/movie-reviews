@@ -45,11 +45,7 @@ COPY --from=installer /app .
 ARG REACT_APP_BACKEND_URL
 ENV REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
 
-# Serve the app using a simple HTTP server
-USER root
-RUN pnpm add -g serve
-USER reactjs
+FROM caddy:2.9-builder-alpine as production
 
-EXPOSE 3000
-
-CMD ["serve", "-s", "apps/frontend/build"]
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY /apps/frontend/build /srv
