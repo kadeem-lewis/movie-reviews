@@ -1,6 +1,6 @@
 moviereviews.randomr.xyz {
     encode gzip
-    reverse_proxy frontend:80
+    reverse_proxy web:80
 }
 
 www.moviereviews.randomr.xyz {
