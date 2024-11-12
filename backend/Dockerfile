@@ -1,40 +1,50 @@
-FROM node:18-alpine AS base
+FROM node:22.10.0-alpine AS development
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
-# Base setup
-FROM base AS builder
 RUN apk update
 RUN apk add --no-cache libc6-compat
 # Set working directory
 WORKDIR /app
-RUN pnpm add -g turbo
-COPY . .
-RUN turbo prune @movie-reviews/backend --docker
 
-# Add lockfile and package.json's of isolated subworkspace
-FROM base AS installer
+# First install the dependencies (as they change less often)
+COPY pnpm-lock.yaml ./
+COPY package.json ./
+
+RUN pnpm install
+COPY . .
+
+FROM node:22.10.0-alpine AS production
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
 RUN apk update
 RUN apk add --no-cache libc6-compat
+# Set working directory
 WORKDIR /app
 
-# First install dependencies (as they change less often)
-COPY --from=builder /app/out/pnpm-lock.yaml ./
-COPY --from=builder /app/out/json/ .
+# First install the dependencies (as they change less often)
+COPY pnpm-lock.yaml ./
+COPY package.json ./
+
 RUN pnpm install
-
-# Copy the full workspace
-COPY --from=builder /app/out/full/ .
-
-FROM base AS runner
-WORKDIR /app
+COPY . .
 
 # Don't run production as root
 RUN addgroup --system --gid 1001 expressjs
 RUN adduser --system --uid 1001 expressjs
 USER expressjs
-COPY --from=installer /app .
 
-CMD ["node", "apps/backend/index.js"]
+ARG PORT
+ARG MOVIEREVIEWS_NS
+ARG MOVIEREVIEWS_DB_URI
+
+ENV PORT=$PORT
+ENV MOVIEREVIEWS_NS=$MOVIEREVIEWS_NS
+ENV MOVIEREVIEWS_DB_URI=$MOVIEREVIEWS_DB_URI
+
+CMD ["node", "index.js"]
