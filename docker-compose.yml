@@ -26,7 +26,28 @@ services:
     env_file:
       - ./apps/backend/.env
 
+  caddy:
+    image: caddy:2.9-builder-alpine
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
+    networks:
+      - app_network
+    depends_on:
+      - web
+      - api
 # Define a network, which allows containers to communicate
 # with each other, by using their container name as a hostname
+
+volumes:
+  caddy_data:
+  caddy_config:
+
 networks:
   app_network:
