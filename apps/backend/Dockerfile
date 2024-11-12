@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:22.10.0-alpine AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -36,5 +36,17 @@ RUN addgroup --system --gid 1001 expressjs
 RUN adduser --system --uid 1001 expressjs
 USER expressjs
 COPY --from=installer /app .
+
+ARG MOVIEREVIEWS_DB_URI
+ARG MOVIEWREVIEWS_NS
+ARG PORT
+
+# Set environment variables for runtime using the arguments
+ENV MOVIEREVIEWS_DB_URI=${MOVIEREVIEWS_DB_URI}
+ENV MOVIEWREVIEWS_NS=${MOVIEWREVIEWS_NS}
+ENV PORT=${PORT}
+
+# Expose the port specified in the environment variable, defaulting to 3000
+EXPOSE ${PORT:-3001}
 
 CMD ["node", "apps/backend/index.js"]

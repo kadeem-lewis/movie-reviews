@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:22.10.0-alpine AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -41,8 +41,15 @@ USER reactjs
 # Copy the built frontend
 COPY --from=installer /app .
 
+# Set environment variable for runtime
+ARG REACT_APP_BACKEND_URL
+ENV REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+
 # Serve the app using a simple HTTP server
 USER root
 RUN pnpm add -g serve
 USER reactjs
+
+EXPOSE 3000
+
 CMD ["serve", "-s", "apps/frontend/build"]
