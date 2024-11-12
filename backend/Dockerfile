@@ -38,7 +38,6 @@ COPY . .
 RUN addgroup --system --gid 1001 expressjs
 RUN adduser --system --uid 1001 expressjs
 USER expressjs
-COPY --from=development .  ./dist
 
 ARG PORT
 ARG MOVIEREVIEWS_NS
@@ -48,4 +47,4 @@ ENV PORT=$PORT
 ENV MOVIEREVIEWS_NS=$MOVIEREVIEWS_NS
 ENV MOVIEREVIEWS_DB_URI=$MOVIEREVIEWS_DB_URI
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "index.js"]
