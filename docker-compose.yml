@@ -2,29 +2,47 @@ services:
   web:
     container_name: web
     build:
-      context: .
-      dockerfile: ./apps/frontend/Dockerfile
-    restart: always
-    ports:
-      - 3000:3000
+      context: ./frontend
+      target: production
+    restart: unless-stopped
     depends_on:
       - api
     networks:
       - app_network
     env_file:
-      - ./apps/frontend/.env
+      - ./frontend/.env
   api:
     container_name: api
     build:
-      context: .
-      dockerfile: ./apps/backend/Dockerfile
-    restart: always
-    ports:
-      - 3001:3001
+      context: ./backend
+      target: production
+    restart: unless-stopped
+
     networks:
       - app_network
     env_file:
-      - ./apps/backend/.env
+      - ./backend/.env
+
+  caddy:
+    container_name: caddy
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - app_network
+    depends_on:
+      - api
+      - web
+
+volumes:
+  caddy_data:
+  caddy_config:
 
 # Define a network, which allows containers to communicate
 # with each other, by using their container name as a hostname
