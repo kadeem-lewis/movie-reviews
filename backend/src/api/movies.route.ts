@@ -1,6 +1,6 @@
 import express from "express";
-import MoviesController from "./movies.controller.js";
-import ReviewsController from "./reviews.controller.js";
+import MoviesController from "./movies.controller";
+import ReviewsController from "./reviews.controller";
 
 const router = express.Router();
 router.route("/").get(MoviesController.apiGetMovies);
