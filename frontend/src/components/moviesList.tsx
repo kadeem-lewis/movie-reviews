@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import MovieDataService from "../services/moviesDataService";
+import { useState, useEffect, useCallback } from "react";
+import MovieDataService from "@/services/moviesDataService.ts";
 import { Link } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -7,9 +7,10 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
+import type { Movie } from "@/types/movies.ts";
 
 const MoviesList = (props) => {
-  const [movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [searchTitle, setSearchTitle] = useState("");
   const [searchRating, setSearchRating] = useState("");
   const [ratings, setRatings] = useState(["All Ratings"]);
@@ -17,41 +18,7 @@ const MoviesList = (props) => {
   const [entriesPerPage, setEntriesPerPage] = useState(0);
   const [currentSearchMode, setCurrentSearchMode] = useState("");
 
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [currentSearchMode]);
-  useEffect(() => {
-    retrieveMovies();
-    retrieveRatings();
-  }, []);
-  useEffect(() => {
-    retrieveMovies();
-    retrieveNextPage();
-  }, [currentPage]);
-  const retrieveNextPage = () => {
-    if (currentSearchMode === "findByTitle") {
-      findByTitle();
-    } else if (currentSearchMode === "findByRating") {
-      findByRating();
-    } else {
-      retrieveMovies();
-    }
-  };
-
-  const retrieveMovies = () => {
-    MovieDataService.getAll(currentPage)
-      .then((response) => {
-        console.log(response.data);
-        setMovies(response.data.movies);
-        setCurrentPage(response.data.page);
-        setEntriesPerPage(response.data.entries_per_page);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
-
-  const retrieveRatings = () => {
+  const retrieveRatings = useCallback(() => {
     MovieDataService.getRatings()
       .then((response) => {
         console.log(response.data);
@@ -61,7 +28,61 @@ const MoviesList = (props) => {
       .catch((e) => {
         console.log(e);
       });
-  };
+  }, []);
+
+  const retrieveMovies = useCallback(() => {
+    MovieDataService.getAll(currentPage)
+      .then((response) => {
+        console.log(response.data);
+        setMovies(response.data.movies);
+        setCurrentPage(response.data.page);
+        setEntriesPerPage(response.data.entries_per_page);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }, [currentPage]);
+
+  const findByTitle = useCallback(() => {
+    setSearchRating("");
+    setCurrentSearchMode("findByTitle");
+    find(searchTitle, "title");
+  }, [searchTitle]);
+
+  const findByRating = useCallback(() => {
+    if (searchRating === "All Ratings") {
+      setSearchTitle("");
+      setCurrentSearchMode("findByRating");
+      retrieveMovies();
+    } else {
+      find(searchRating, "rated");
+    }
+  }, [searchRating, retrieveMovies]);
+
+  const retrieveNextPage = useCallback(() => {
+    if (currentSearchMode === "findByTitle") {
+      findByTitle();
+    } else if (currentSearchMode === "findByRating") {
+      findByRating();
+    } else {
+      retrieveMovies();
+    }
+  }, [currentSearchMode, findByRating, findByTitle, retrieveMovies]);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [currentSearchMode]);
+
+  useEffect(() => {
+    retrieveMovies();
+    retrieveRatings();
+  }, [retrieveMovies, retrieveRatings]);
+
+  useEffect(() => {
+    retrieveMovies();
+    retrieveNextPage();
+  }, [currentPage, retrieveMovies, retrieveNextPage]);
+
   const onChangeSearchTitle = (e) => {
     const searchTitle = e.target.value;
     setSearchTitle(searchTitle);
@@ -72,7 +93,7 @@ const MoviesList = (props) => {
     setSearchRating(searchRating);
   };
 
-  const find = (query, by, currentPage) => {
+  const find = (query: string, by: string, currentPage: number = 0) => {
     MovieDataService.find(query, by)
       .then((response) => {
         console.log(response.data);
@@ -81,22 +102,6 @@ const MoviesList = (props) => {
       .catch((e) => {
         console.log(e);
       });
-  };
-
-  const findByTitle = () => {
-    setSearchRating("");
-    setCurrentSearchMode("findByTitle");
-    find(searchTitle, "title");
-  };
-
-  const findByRating = () => {
-    if (searchRating === "All Ratings") {
-      setSearchTitle("");
-      setCurrentSearchMode("findByRating");
-      retrieveMovies();
-    } else {
-      find(searchRating, "rated");
-    }
   };
 
   return (
@@ -122,7 +127,11 @@ const MoviesList = (props) => {
                 <Form.Control as="select" onChange={onChangeSearchRating}>
                   {ratings.map((rating) => {
                     return (
-                      <option value={rating} selected={rating === searchRating}>
+                      <option
+                        value={rating}
+                        key={rating}
+                        selected={rating === searchRating}
+                      >
                         {rating}
                       </option>
                     );
@@ -136,9 +145,10 @@ const MoviesList = (props) => {
           </Row>
         </Form>
         <Row>
+          {/* TODO: Make everything above this it's own component */}
           {movies.map((movie) => {
             return (
-              <Col>
+              <Col key={movie._id}>
                 <Card style={{ width: "18rem" }}>
                   <Card.Img src={movie.poster + "/100px180"} />
                   <Card.Body>

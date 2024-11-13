@@ -20,13 +20,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --build --force"
   },
   "browserslist": {
     "production": [

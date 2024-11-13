@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import MovieDataService from "../services/moviesDataService";
+import { useState } from "react";
+import MovieDataService from "@/services/moviesDataService.ts";
 import { Link } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -23,7 +23,7 @@ const AddReview = (props) => {
   };
 
   const saveReview = () => {
-    var data = {
+    const data = {
       review: review,
       name: props.user.name,
       user_id: props.user.id,
@@ -32,21 +32,25 @@ const AddReview = (props) => {
     };
     if (editing) {
       // get existing review id
-      data.review_id = props.location.state.currentReview._id;
+      Object.assign(data, {
+        review_id: props.location.state.currentReview._id,
+      });
       MovieDataService.updateReview(data)
         .then((response) => {
           setSubmitted(true);
           console.log(response.data);
         })
-        .catch((e) => {
-          console.log(e);
+        .catch((error: unknown) => {
+          console.error(error);
         });
     } else {
       MovieDataService.createReview(data)
-        .then((response) => {
+        .then(() => {
           setSubmitted(true);
         })
-        .catch((e) => {});
+        .catch((error: unknown) => {
+          console.error(error);
+        });
     }
   };
 
