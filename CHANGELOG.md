@@ -7,6 +7,12 @@
 - Functions defined outside of useEffect hook being used inside useEffect without being added to the dependency array
 - Functions in useEffect dependency array not being wrapped in useCallback
 
+### Changed
+
+- replaced axios calls with fetch api in react frontend
+- Changed movieDataService from a class to a file containing functions
+- api caller functions to try/catch and async/await instead of .then/.catch
+
 ## 11-12-2024
 
 ### Added
