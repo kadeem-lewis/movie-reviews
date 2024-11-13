@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Switch, Route, Link } from "react-router-dom";
+import { Switch, Route, Link, Redirect } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AddReview from "./components/addReview.tsx";
 import MoviesList from "./components/moviesList.tsx";
@@ -9,10 +9,15 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { Button } from "react-bootstrap";
 
-function App() {
-  const [user, setUser] = useState(null);
+export type User = {
+  name: string;
+  id: string;
+};
 
-  async function login(user = null) {
+function App() {
+  const [user, setUser] = useState<User | null>(null);
+
+  async function login(user: User) {
     setUser(user);
   }
 
@@ -41,20 +46,19 @@ function App() {
         </Navbar.Collapse>
       </Navbar>
       <Switch>
-        <Route exact path={["/", "/movies"]} component={MoviesList}></Route>
+        <Route exact path={["/", "/movies"]}>
+          <MoviesList />
+        </Route>
 
-        <Route
-          path="/movies/:id/review"
-          render={(props) => <AddReview {...props} user={user} />}
-        ></Route>
-        <Route
-          path="/movies/:id/"
-          render={(props) => <Movie {...props} user={user} />}
-        ></Route>
-        <Route
-          path="/login"
-          render={(props) => <Login {...props} login={login} />}
-        ></Route>
+        <Route path="/movies/:id/review">
+          {user ? <AddReview user={user} /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/movies/:id/">
+          <Movie user={user} />
+        </Route>
+        <Route path="/login">
+          <Login login={login} />
+        </Route>
       </Switch>
     </div>
   );

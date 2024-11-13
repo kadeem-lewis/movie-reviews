@@ -1,10 +1,18 @@
 import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { useHistory } from "react-router-dom";
+import { User } from "@/App";
 
-const Login = (props) => {
+type LoginProps = {
+  login: (user: User) => void;
+};
+
+const Login = ({ login: loginFn }: LoginProps) => {
   const [name, setName] = useState("");
   const [id, setId] = useState("");
+
+  const history = useHistory();
 
   const onChangeName = (e) => {
     const name = e.target.value;
@@ -15,8 +23,8 @@ const Login = (props) => {
     setId(id);
   };
   const login = () => {
-    props.login({ name: name, id: id });
-    props.history.push("/");
+    loginFn({ name: name, id: id });
+    history.push("/");
   };
 
   return (
