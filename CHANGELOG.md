@@ -3,6 +3,9 @@
 ### Added
 
 - typescript support to react frontend
+- typescript support for express backend
+- tsx for compiling ts code in backend
+- tsup to bundle and build typescript backend
 
 ### Changed
 
