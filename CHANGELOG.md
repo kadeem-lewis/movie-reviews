@@ -1,3 +1,10 @@
+## 11-13-2024
+
+### Fixed
+
+- Rendering <a> as a descendant of <a> due to rendering react-router-dom Link inside a Bootstrap Nav.Link component in Navbar
+- Rendering list without unique key prop in ratings and movies components
+
 ## 11-12-2024
 
 ### Added
