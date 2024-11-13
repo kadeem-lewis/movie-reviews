@@ -80,10 +80,8 @@ const Movie = ({ user }: { user: User | null }) => {
                       <Row>
                         <Col>
                           <Link
-                            to={{
-                              pathname: "/movies/" + id + "/review",
-                              state: { currentReview: review },
-                            }}
+                            to={`/movies/${id}/review`}
+                            state={{ currentReview: review }}
                           >
                             Edit
                           </Link>
