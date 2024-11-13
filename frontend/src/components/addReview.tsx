@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { updateReview, createReview } from "@/services/moviesDataService.ts";
-import { Link } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { User } from "@/App";
 
-const AddReview = (props) => {
+const AddReview = ({ user }: { user: User }) => {
   let editing = false;
   let initialReviewState = "";
+  const { id } = useParams();
+  const location = useLocation();
 
-  if (props.location.state && props.location.state.currentReview) {
+  if (location.state && location.state.currentReview) {
     editing = true;
-    initialReviewState = props.location.state.currentReview.review;
+    initialReviewState = location.state.currentReview.review;
   }
 
   const [review, setReview] = useState(initialReviewState);
@@ -25,15 +28,14 @@ const AddReview = (props) => {
   const saveReview = async () => {
     const data = {
       review: review,
-      name: props.user.name,
-      user_id: props.user.id,
-      // get movie id direct from url
-      movie_id: props.match.params.id,
+      name: user.name,
+      user_id: user.id,
+      movie_id: id,
     };
     if (editing) {
       // get existing review id
       Object.assign(data, {
-        review_id: props.location.state.currentReview._id,
+        review_id: location.state.currentReview._id,
       });
       try {
         await updateReview(data);
@@ -56,7 +58,7 @@ const AddReview = (props) => {
       {submitted ? (
         <div>
           <h4>Review submitted successfully</h4>
-          <Link to={"/movies/" + props.match.params.id}>Back to Movie</Link>
+          <Link to={"/movies/" + id}>Back to Movie</Link>
         </div>
       ) : (
         <Form>

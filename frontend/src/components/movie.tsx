@@ -10,11 +10,14 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Media from "react-bootstrap/Media";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import type { Movie } from "@/types/movies";
+import { User } from "@/App";
 
-const Movie = (props) => {
+const Movie = ({ user }: { user: User | null }) => {
   const [movie, setMovie] = useState<Movie>();
+  const { id } = useParams();
+
   const getMovie = async (id: string) => {
     try {
       const movie = await get(id);
@@ -24,11 +27,12 @@ const Movie = (props) => {
     }
   };
   useEffect(() => {
-    getMovie(props.match.params.id);
-  }, [props.match.params.id]);
+    getMovie(id);
+  }, [id]);
 
   const deleteReview = (reviewId: string, index: number) => {
-    apiDeleteReview(reviewId, props.user.id)
+    if (!user) return;
+    apiDeleteReview(reviewId, user.id)
       .then(() => {
         setMovie((prevState) => {
           prevState?.reviews.splice(index, 1);
@@ -54,10 +58,8 @@ const Movie = (props) => {
               <Card.Header as="h5">{movie?.title}</Card.Header>
               <Card.Body>
                 <Card.Text></Card.Text>
-                {props.user && (
-                  <Link to={"/movies/" + props.match.params.id + "/review"}>
-                    Add Review
-                  </Link>
+                {user && (
+                  <Link to={"/movies/" + id + "/review"}>Add Review</Link>
                 )}
               </Card.Body>
             </Card>
@@ -74,13 +76,12 @@ const Movie = (props) => {
                         new Date(Date.parse(review.date)).toDateString()}
                     </h5>
                     <p>{review.review}</p>
-                    {props.user && props.user.id === review.user_id && (
+                    {user && user.id === review.user_id && (
                       <Row>
                         <Col>
                           <Link
                             to={{
-                              pathname:
-                                "/movies/" + props.match.params.id + "/review",
+                              pathname: "/movies/" + id + "/review",
                               state: { currentReview: review },
                             }}
                           >
