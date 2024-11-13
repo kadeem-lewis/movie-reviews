@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Switch, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import AddReview from "./components/addReview";
-import MoviesList from "./components/moviesList";
-import Movie from "./components/movie";
-import Login from "./components/login";
+import AddReview from "./components/addReview.tsx";
+import MoviesList from "./components/moviesList.tsx";
+import Movie from "./components/movie.tsx";
+import Login from "./components/login.tsx";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 
