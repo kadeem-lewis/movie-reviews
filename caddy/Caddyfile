@@ -4,6 +4,7 @@ www.${DOMAIN_NAME} {
 
 ${DOMAIN_NAME} {
 
+    tls internal
     reverse_proxy /api/* api:3001
 
     encode gzip
