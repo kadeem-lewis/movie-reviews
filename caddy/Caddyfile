@@ -1,9 +1,9 @@
-www.${DOMAIN_NAME} {
-    redir https.moviereviews.randomr.xyz {uri} permanent
+www.moviereviews.builtbykadeem.com {
+    redir https://moviereviews.builtbykadeem.com {uri} permanent
 }
 
-${DOMAIN_NAME} {
-
+moviereviews.builtbykadeem.com {
+    tls internal
     reverse_proxy /api/* api:3001
 
     encode gzip
