@@ -1,14 +1,13 @@
-moviereviews.randomr.xyz {
+www.moviereviews.builtbykadeem.com {
+    redir https://moviereviews.builtbykadeem.com {uri} permanent
+}
+
+moviereviews.builtbykadeem.com {
+    tls internal
+    reverse_proxy /api/* api:3001
+
     encode gzip
     reverse_proxy web:80
-}
-
-www.moviereviews.randomr.xyz {
-    redir https.moviereviews.randomr.xyz {uri} permanent
-}
-
-api.moviereviews.randomr.xyz {
-    reverse_proxy api:3001
 
     header {
         -X-Powered-By

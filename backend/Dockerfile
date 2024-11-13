@@ -34,6 +34,8 @@ COPY package.json ./
 RUN pnpm install
 COPY . .
 
+RUN pnpm build
+
 # Don't run production as root
 RUN addgroup --system --gid 1001 expressjs
 RUN adduser --system --uid 1001 expressjs
@@ -47,4 +49,4 @@ ENV PORT=$PORT
 ENV MOVIEREVIEWS_NS=$MOVIEREVIEWS_NS
 ENV MOVIEREVIEWS_DB_URI=$MOVIEREVIEWS_DB_URI
 
-CMD ["node", "index.js"]
+CMD ["node", "dist/index.cjs"]
