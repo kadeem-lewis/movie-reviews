@@ -13,7 +13,7 @@ import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import type { Movie } from "@/types/movies.ts";
 
-const MoviesList = (props) => {
+const MoviesList = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [searchTitle, setSearchTitle] = useState("");
   const [searchRating, setSearchRating] = useState("");
