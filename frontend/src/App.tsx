@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Switch, Route, Link, Redirect } from "react-router-dom";
+import { Route, Routes, NavLink, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AddReview from "./components/addReview.tsx";
 import MoviesList from "./components/moviesList.tsx";
@@ -32,34 +32,29 @@ function App() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            <Nav.Link to={"/movies"} as={Link}>
+            <Nav.Link to={"/movies"} as={NavLink}>
               Movies
             </Nav.Link>
             {user ? (
               <Button onClick={logout}>Logout User</Button>
             ) : (
-              <Nav.Link as={Link} to={"/login"}>
+              <Nav.Link as={NavLink} to={"/login"}>
                 Login
               </Nav.Link>
             )}{" "}
           </Nav>
         </Navbar.Collapse>
       </Navbar>
-      <Switch>
-        <Route exact path={["/", "/movies"]}>
-          <MoviesList />
-        </Route>
-
-        <Route path="/movies/:id/review">
-          {user ? <AddReview user={user} /> : <Redirect to="/login" />}
-        </Route>
-        <Route path="/movies/:id/">
-          <Movie user={user} />
-        </Route>
-        <Route path="/login">
-          <Login login={login} />
-        </Route>
-      </Switch>
+      <Routes>
+        <Route path="/" element={<MoviesList />} />
+        <Route path="/movies" element={<MoviesList />} />
+        <Route
+          path="/movies/:id/review"
+          element={user ? <AddReview user={user} /> : <Navigate to="/login" />}
+        />
+        <Route path="/movies/:id" element={<Movie user={user} />} />
+        <Route path="/login" element={<Login login={login} />} />
+      </Routes>
     </div>
   );
 }
