@@ -22,7 +22,7 @@ ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
 
 RUN npm run build
 
-FROM caddy:2.9-alpine as production
+FROM caddy:2.9-alpine AS production
 
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
