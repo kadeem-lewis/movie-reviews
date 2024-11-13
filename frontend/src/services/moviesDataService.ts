@@ -7,12 +7,12 @@ class MovieDataService {
     );
   }
 
-  get(id) {
+  get(id: string) {
     return axios.get(
       `${import.meta.env.VITE_BACKEND_URL}/api/v1/movies/id/${id}`
     );
   }
-  find(query, by = "title", page = 0) {
+  find(query: string, by = "title", page = 0) {
     return axios.get(
       `${
         import.meta.env.VITE_BACKEND_URL
@@ -33,7 +33,7 @@ class MovieDataService {
       data
     );
   }
-  deleteReview(id, userId) {
+  deleteReview(id: string, userId: string) {
     return axios.delete(
       `${import.meta.env.VITE_BACKEND_URL}/api/v1/movies/review`,
       { data: { review_id: id, user_id: userId } }
