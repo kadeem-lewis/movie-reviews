@@ -1,8 +1,8 @@
-www.moviereviews.randomr.xyz {
+www.${DOMAIN_NAME} {
     redir https.moviereviews.randomr.xyz {uri} permanent
 }
 
-moviereviews.randomr.xyz {
+${DOMAIN_NAME} {
 
     reverse_proxy /api/* api:3001
 
