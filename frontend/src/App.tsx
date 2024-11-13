@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Switch, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AddReview from "./components/addReview.tsx";
@@ -7,6 +7,7 @@ import Movie from "./components/movie.tsx";
 import Login from "./components/login.tsx";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import { Button } from "react-bootstrap";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -26,17 +27,16 @@ function App() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            <Nav.Link>
-              <Link to={"/movies"}>Movies</Link>{" "}
+            <Nav.Link to={"/movies"} as={Link}>
+              Movies
             </Nav.Link>
-            <Nav.Link>
-              {/* true or false statement logs-in / logs-out users */}
-              {user ? (
-                <a>Logout User</a>
-              ) : (
-                <Link to={"/login"}>Login</Link>
-              )}{" "}
-            </Nav.Link>
+            {user ? (
+              <Button onClick={logout}>Logout User</Button>
+            ) : (
+              <Nav.Link as={Link} to={"/login"}>
+                Login
+              </Nav.Link>
+            )}{" "}
           </Nav>
         </Navbar.Collapse>
       </Navbar>
