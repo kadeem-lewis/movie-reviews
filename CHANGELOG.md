@@ -6,6 +6,8 @@
 - typescript support for express backend
 - tsx for compiling ts code in backend
 - tsup to bundle and build typescript backend
+- eslint and typescript eslint for linting typescript code
+- added prettier for code formatting
 
 ### Changed
 

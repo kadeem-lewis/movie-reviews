@@ -6,8 +6,9 @@
     "strict": true,
     "moduleResolution": "node",
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "allowJs": true // prevent eslint parsing error
   },
-  "include": ["src"],
+  "include": ["src", "eslint.config.js"],
   "exclude": ["node_modules"]
 }
