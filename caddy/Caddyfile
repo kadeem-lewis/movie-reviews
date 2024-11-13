@@ -1,34 +1,28 @@
-moviereviews.randomr.xyz {
-    encode gzip
-
-    # Route /api requests to the API service
-    @api {
-        path /api*
-    }
-    reverse_proxy @api api:3001 {
-        header {
-            -X-Powered-By
-            -Server
-
-            # Enable HSTS
-            Strict-Transport-Security "max-age=31536000"
-
-            # Disable clients from sniffing the media type
-            X-Content-Type-Options "nosniff"
-
-            # Clickjacking protection
-            X-Frame-Options "DENY"
-
-            # XSS Protection
-            X-XSS-Protection "1; mode=block"
-        }
-    }
-
-    # Route other requests to the web service
-    reverse_proxy web:80
+www.moviereviews.randomr.xyz {
+    redir https.moviereviews.randomr.xyz {uri} permanent
 }
 
-# Redirect www to the main domain
-www.moviereviews.randomr.xyz {
-    redir https://moviereviews.randomr.xyz{uri} permanent
+moviereviews.randomr.xyz {
+
+    reverse_proxy /api/* api:3001
+
+    encode gzip
+    reverse_proxy web:80
+
+    header {
+        -X-Powered-By
+        -Server
+
+        # Enable HSTS
+        Strict-Transport-Security "max-age=31536000"
+
+        # Disable clients from sniffing the media type
+        X-Content-Type-Options "nosniff"
+
+        # Clickjacking protection
+        X-Frame-Options "DENY"
+
+        # XSS Protection
+        X-XSS-Protection "1; mode=block"
+    }
 }
