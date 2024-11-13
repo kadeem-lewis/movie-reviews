@@ -4,6 +4,8 @@
 
 - Rendering <a> as a descendant of <a> due to rendering react-router-dom Link inside a Bootstrap Nav.Link component in Navbar
 - Rendering list without unique key prop in ratings and movies components
+- Functions defined outside of useEffect hook being used inside useEffect without being added to the dependency array
+- Functions in useEffect dependency array not being wrapped in useCallback
 
 ## 11-12-2024
 
