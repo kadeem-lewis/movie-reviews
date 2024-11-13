@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import MovieDataService from "@/services/moviesDataService.ts";
+import {
+  get,
+  deleteReview as apiDeleteReview,
+} from "@/services/moviesDataService.ts";
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Image from "react-bootstrap/Image";
@@ -12,22 +15,20 @@ import type { Movie } from "@/types/movies";
 
 const Movie = (props) => {
   const [movie, setMovie] = useState<Movie>();
-  const getMovie = (id: string) => {
-    MovieDataService.get(id)
-      .then((response) => {
-        setMovie(response.data);
-        console.log(response.data);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+  const getMovie = async (id: string) => {
+    try {
+      const movie = await get(id);
+      setMovie(movie);
+    } catch (error: unknown) {
+      console.error(error);
+    }
   };
   useEffect(() => {
     getMovie(props.match.params.id);
   }, [props.match.params.id]);
 
   const deleteReview = (reviewId: string, index: number) => {
-    MovieDataService.deleteReview(reviewId, props.user.id)
+    apiDeleteReview(reviewId, props.user.id)
       .then(() => {
         setMovie((prevState) => {
           prevState?.reviews.splice(index, 1);

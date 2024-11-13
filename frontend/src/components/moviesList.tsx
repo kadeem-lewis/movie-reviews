@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import MovieDataService from "@/services/moviesDataService.ts";
+import {
+  getRatings,
+  getAll,
+  find as apiFind,
+} from "@/services/moviesDataService.ts";
 import { Link } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -18,29 +22,25 @@ const MoviesList = (props) => {
   const [entriesPerPage, setEntriesPerPage] = useState(0);
   const [currentSearchMode, setCurrentSearchMode] = useState("");
 
-  const retrieveRatings = useCallback(() => {
-    MovieDataService.getRatings()
-      .then((response) => {
-        console.log(response.data);
-        //start with 'All Ratings' if user doesn't specify any ratings
-        setRatings(["All Ratings"].concat(response.data));
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+  const retrieveRatings = useCallback(async () => {
+    try {
+      const ratings = await getRatings();
+      console.log(ratings);
+      setRatings(["All Ratings"].concat(ratings));
+    } catch (error: unknown) {
+      console.error(error);
+    }
   }, []);
 
-  const retrieveMovies = useCallback(() => {
-    MovieDataService.getAll(currentPage)
-      .then((response) => {
-        console.log(response.data);
-        setMovies(response.data.movies);
-        setCurrentPage(response.data.page);
-        setEntriesPerPage(response.data.entries_per_page);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+  const retrieveMovies = useCallback(async () => {
+    try {
+      const response = await getAll(currentPage);
+      setMovies(response.movies);
+      setCurrentPage(response.page);
+      setEntriesPerPage(response.entries_per_page);
+    } catch (error: unknown) {
+      console.error(error);
+    }
   }, [currentPage]);
 
   const findByTitle = useCallback(() => {
@@ -93,15 +93,13 @@ const MoviesList = (props) => {
     setSearchRating(searchRating);
   };
 
-  const find = (query: string, by: string, currentPage: number = 0) => {
-    MovieDataService.find(query, by)
-      .then((response) => {
-        console.log(response.data);
-        setMovies(response.data.movies);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+  const find = async (query: string, by: string, currentPage: number = 0) => {
+    try {
+      const response = await apiFind(query, by);
+      setMovies(response.movies);
+    } catch (error: unknown) {
+      console.error(error);
+    }
   };
 
   return (
