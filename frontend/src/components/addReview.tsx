@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { updateReview, createReview } from "@/services/moviesDataService.ts";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useParams, useLocation, Navigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { User } from "@/App";
+import { useUser } from "@/layouts/RootLayout";
 
-const AddReview = ({ user }: { user: User }) => {
+const AddReview = () => {
   let editing = false;
   let initialReviewState = "";
   const { id } = useParams();
   const location = useLocation();
+  const { user } = useUser();
 
   if (location.state && location.state.currentReview) {
     editing = true;
@@ -28,8 +29,8 @@ const AddReview = ({ user }: { user: User }) => {
   const saveReview = async () => {
     const data = {
       review: review,
-      name: user.name,
-      user_id: user.id,
+      name: user?.name,
+      user_id: user?.id,
       movie_id: id,
     };
     if (editing) {
@@ -52,6 +53,10 @@ const AddReview = ({ user }: { user: User }) => {
       }
     }
   };
+
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
 
   return (
     <div>

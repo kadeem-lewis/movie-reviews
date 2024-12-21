@@ -12,11 +12,13 @@ import Button from "react-bootstrap/Button";
 import Media from "react-bootstrap/Media";
 import { Link, useParams } from "react-router-dom";
 import type { Movie } from "@/types/movies";
-import { User } from "@/App";
+import { useUser } from "@/layouts/RootLayout";
 
-const Movie = ({ user }: { user: User | null }) => {
+const Movie = () => {
   const [movie, setMovie] = useState<Movie>();
   const { id } = useParams();
+
+  const { user } = useUser();
 
   const getMovie = async (id: string) => {
     try {

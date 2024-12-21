@@ -2,17 +2,15 @@ import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useNavigate } from "react-router-dom";
-import { User } from "@/App";
+import { useUser } from "@/layouts/RootLayout";
 
-type LoginProps = {
-  login: (user: User) => void;
-};
-
-const Login = ({ login: loginFn }: LoginProps) => {
+const Login = () => {
   const [name, setName] = useState("");
   const [id, setId] = useState("");
 
   const navigate = useNavigate();
+
+  const { login: loginFn } = useUser();
 
   const onChangeName = (e) => {
     const name = e.target.value;
