@@ -6,10 +6,12 @@ import MoviesList from "@/components/moviesList";
 import AddReview from "@/components/addReview";
 import Movie from "@/components/movie";
 import Login from "@/components/login";
+import ErrorPage from "@/errorPage";
 
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "/",
