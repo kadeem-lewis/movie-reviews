@@ -4,7 +4,10 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RootLayout from "@/layouts/RootLayout";
 import MoviesList from "@/components/moviesList";
 import AddReview from "@/components/addReview";
-import Movie from "@/components/movie";
+import Movie, {
+  loader as movieLoader,
+  action as movieAction,
+} from "@/components/movie";
 import Login from "@/components/login";
 import ErrorPage from "@/errorPage";
 
@@ -28,6 +31,8 @@ const router = createBrowserRouter([
       {
         path: "/movies/:id",
         element: <Movie />,
+        loader: movieLoader,
+        action: movieAction,
       },
       {
         path: "/login",

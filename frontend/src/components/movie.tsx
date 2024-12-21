@@ -1,8 +1,4 @@
-import { useState, useEffect } from "react";
-import {
-  get,
-  deleteReview as apiDeleteReview,
-} from "@/services/moviesDataService.ts";
+import { get, deleteReview } from "@/services/moviesDataService.ts";
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Image from "react-bootstrap/Image";
@@ -10,43 +6,31 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Media from "react-bootstrap/Media";
-import { Link, useParams } from "react-router-dom";
+import { Link, useFetcher, useLoaderData, useParams } from "react-router-dom";
 import type { Movie } from "@/types/movies";
 import { useUser } from "@/layouts/RootLayout";
 
-const Movie = () => {
-  const [movie, setMovie] = useState<Movie>();
+export async function loader({ params }) {
+  const movie = await get(params.id);
+  return { movie };
+}
+
+export async function action({ request }) {
+  const formData = await request.formData();
+  const { userId, reviewId } = Object.fromEntries(formData);
+  //TODO: look to see if I need better error handling here
+  const response = await deleteReview(reviewId, userId);
+  return response;
+}
+
+export default function Movie() {
   const { id } = useParams();
 
   const { user } = useUser();
 
-  const getMovie = async (id: string) => {
-    try {
-      const movie = await get(id);
-      setMovie(movie);
-    } catch (error: unknown) {
-      console.error(error);
-    }
-  };
-  useEffect(() => {
-    getMovie(id);
-  }, [id]);
+  const { movie } = useLoaderData();
 
-  const deleteReview = (reviewId: string, index: number) => {
-    if (!user) return;
-    apiDeleteReview(reviewId, user.id)
-      .then(() => {
-        setMovie((prevState) => {
-          prevState?.reviews.splice(index, 1);
-          return {
-            ...prevState,
-          };
-        });
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
+  const fetcher = useFetcher();
 
   return (
     <div>
@@ -68,7 +52,7 @@ const Movie = () => {
             <br></br>
             <h2>Reviews</h2>
             <br></br>
-            {movie?.reviews.map((review, index) => {
+            {movie?.reviews.map((review) => {
               return (
                 <Media key={review._id}>
                   <Media.Body>
@@ -89,12 +73,21 @@ const Movie = () => {
                           </Link>
                         </Col>
                         <Col>
-                          <Button
-                            variant="link"
-                            onClick={() => deleteReview(review._id, index)}
-                          >
-                            Delete
-                          </Button>
+                          <fetcher.Form method="DELETE">
+                            <input
+                              type="hidden"
+                              name="reviewId"
+                              value={review._id}
+                            />
+                            <input
+                              type="hidden"
+                              name="userId"
+                              value={user.id}
+                            />
+                            <Button variant="link" type="submit">
+                              Delete
+                            </Button>
+                          </fetcher.Form>
                         </Col>
                       </Row>
                     )}
@@ -109,6 +102,4 @@ const Movie = () => {
       {movie?.plot}
     </div>
   );
-};
-
-export default Movie;
+}
