@@ -1,3 +1,9 @@
+## 12-21-2024
+
+### Changed
+
+- Upgraded app to use React Router Data Router
+
 ## 11-13-2024
 
 ### Fixed
@@ -6,12 +12,15 @@
 - Rendering list without unique key prop in ratings and movies components
 - Functions defined outside of useEffect hook being used inside useEffect without being added to the dependency array
 - Functions in useEffect dependency array not being wrapped in useCallback
+- accessing the add review form just by navigating to id/review without being logged in
 
 ### Changed
 
 - replaced axios calls with fetch api in react frontend
 - Changed movieDataService from a class to a file containing functions
 - api caller functions to try/catch and async/await instead of .then/.catch
+- react router to render children as elements instead of components
+- components to use react router hooks instead of props
 
 ## 11-12-2024
 
