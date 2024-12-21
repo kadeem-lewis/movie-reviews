@@ -1,12 +1,42 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";
-import { BrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import RootLayout from "@/layouts/RootLayout";
+import MoviesList from "@/components/moviesList";
+import AddReview from "@/components/addReview";
+import Movie from "@/components/movie";
+import Login from "@/components/login";
+
+const router = createBrowserRouter([
+  {
+    element: <RootLayout />,
+    children: [
+      {
+        path: "/",
+        element: <MoviesList />,
+      },
+      {
+        path: "/movies",
+        element: <MoviesList />,
+      },
+      {
+        path: "/movies/:id/review",
+        element: <AddReview />,
+      },
+      {
+        path: "/movies/:id",
+        element: <Movie />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
+      },
+    ],
+  },
+]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </StrictMode>
 );
