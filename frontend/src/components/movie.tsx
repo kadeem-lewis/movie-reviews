@@ -6,20 +6,28 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Media from "react-bootstrap/Media";
-import { Link, useFetcher, useLoaderData, useParams } from "react-router-dom";
+import {
+  ActionFunctionArgs,
+  Link,
+  LoaderFunctionArgs,
+  useFetcher,
+  useLoaderData,
+  useParams,
+} from "react-router-dom";
 import type { Movie } from "@/types/movies";
 import { useUser } from "@/layouts/RootLayout";
 
-export async function loader({ params }) {
+export async function loader({ params }: LoaderFunctionArgs) {
+  if (!params.id) return;
   const movie = await get(params.id);
   return { movie };
 }
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const { userId, reviewId } = Object.fromEntries(formData);
   //TODO: look to see if I need better error handling here
-  const response = await deleteReview(reviewId, userId);
+  const response = await deleteReview(String(reviewId), String(userId));
   return response;
 }
 
