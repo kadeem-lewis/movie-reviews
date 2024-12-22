@@ -1,134 +1,79 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
   getRatings,
   getAll,
-  find as apiFind,
+  find as find,
 } from "@/services/moviesDataService.ts";
-import { Link } from "react-router-dom";
+import {
+  Link,
+  useSearchParams,
+  Form as RouterForm,
+  useLoaderData,
+  LoaderFunctionArgs,
+} from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
-import type { Movie } from "@/types/movies.ts";
 
-const MoviesList = () => {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [searchTitle, setSearchTitle] = useState("");
-  const [searchRating, setSearchRating] = useState("");
-  const [ratings, setRatings] = useState(["All Ratings"]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [entriesPerPage, setEntriesPerPage] = useState(0);
-  const [currentSearchMode, setCurrentSearchMode] = useState("");
+export async function loader({ request }: LoaderFunctionArgs) {
+  const searchParams = new URL(request.url).searchParams;
 
-  const retrieveRatings = useCallback(async () => {
-    try {
-      const ratings = await getRatings();
-      console.log(ratings);
-      setRatings(["All Ratings"].concat(ratings));
-    } catch (error: unknown) {
-      console.error(error);
-    }
-  }, []);
+  const title = searchParams.get("title");
+  const rating = searchParams.get("rating");
+  const page = Number(searchParams.get("page")) || 0;
 
-  const retrieveMovies = useCallback(async () => {
-    try {
-      const response = await getAll(currentPage);
-      setMovies(response.movies);
-      setCurrentPage(response.page);
-      setEntriesPerPage(response.entries_per_page);
-    } catch (error: unknown) {
-      console.error(error);
-    }
-  }, [currentPage]);
-
-  const findByTitle = useCallback(() => {
-    setSearchRating("");
-    setCurrentSearchMode("findByTitle");
-    find(searchTitle, "title");
-  }, [searchTitle]);
-
-  const findByRating = useCallback(() => {
-    if (searchRating === "All Ratings") {
-      setSearchTitle("");
-      setCurrentSearchMode("findByRating");
-      retrieveMovies();
+  const getMovies = async () => {
+    if (title) {
+      return find(title, "title", page);
+    } else if (rating) {
+      return find(rating, "rated", page);
     } else {
-      find(searchRating, "rated");
-    }
-  }, [searchRating, retrieveMovies]);
-
-  const retrieveNextPage = useCallback(() => {
-    if (currentSearchMode === "findByTitle") {
-      findByTitle();
-    } else if (currentSearchMode === "findByRating") {
-      findByRating();
-    } else {
-      retrieveMovies();
-    }
-  }, [currentSearchMode, findByRating, findByTitle, retrieveMovies]);
-
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [currentSearchMode]);
-
-  useEffect(() => {
-    retrieveMovies();
-    retrieveRatings();
-  }, [retrieveMovies, retrieveRatings]);
-
-  useEffect(() => {
-    retrieveMovies();
-    retrieveNextPage();
-  }, [currentPage, retrieveMovies, retrieveNextPage]);
-
-  const onChangeSearchTitle = (e) => {
-    const searchTitle = e.target.value;
-    setSearchTitle(searchTitle);
-  };
-
-  const onChangeSearchRating = (e) => {
-    const searchRating = e.target.value;
-    setSearchRating(searchRating);
-  };
-
-  const find = async (query: string, by: string, currentPage: number = 0) => {
-    try {
-      const response = await apiFind(query, by);
-      setMovies(response.movies);
-    } catch (error: unknown) {
-      console.error(error);
+      return getAll(page);
     }
   };
+
+  const [ratings, movies] = await Promise.all([getRatings(), getMovies()]);
+  return { movies, ratings };
+}
+
+export default function MoviesList() {
+  const { movies, ratings } = useLoaderData();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [entriesPerPage] = useState(movies.entries_per_page);
 
   return (
     <div className="App">
       <Container>
-        <Form>
-          <Row>
-            <Col>
+        <Row>
+          <Col>
+            <RouterForm>
               <Form.Group>
                 <Form.Control
                   type="text"
                   placeholder="Search by title"
-                  value={searchTitle}
-                  onChange={onChangeSearchTitle}
+                  name="title"
+                  defaultValue={searchParams.get("title") || ""}
                 />
               </Form.Group>
-              <Button variant="primary" type="button" onClick={findByTitle}>
+              <Button variant="primary" type="submit">
                 Search
               </Button>
-            </Col>
-            <Col>
+            </RouterForm>
+          </Col>
+          <Col>
+            <RouterForm>
               <Form.Group>
-                <Form.Control as="select" onChange={onChangeSearchRating}>
+                <Form.Control as="select" name="rating">
                   {ratings.map((rating) => {
                     return (
                       <option
                         value={rating}
                         key={rating}
-                        selected={rating === searchRating}
+                        selected={rating === searchParams.get("rating")}
                       >
                         {rating}
                       </option>
@@ -136,15 +81,15 @@ const MoviesList = () => {
                   })}
                 </Form.Control>
               </Form.Group>
-              <Button variant="primary" type="button" onClick={findByRating}>
+              <Button variant="primary" type="submit">
                 Search
               </Button>
-            </Col>
-          </Row>
-        </Form>
+            </RouterForm>
+          </Col>
+        </Row>
         <Row>
           {/* TODO: Make everything above this it's own component */}
-          {movies.map((movie) => {
+          {movies.movies.map((movie) => {
             return (
               <Col key={movie._id}>
                 <Card style={{ width: "18rem" }}>
@@ -161,11 +106,15 @@ const MoviesList = () => {
           })}
         </Row>
         <br />
-        Showing Page: {currentPage}
+        Showing Page: {searchParams.get("page") || 0}
         <Button
           variant="link"
           onClick={() => {
-            setCurrentPage(currentPage + 1);
+            searchParams.set(
+              "page",
+              (Number(searchParams.get("page") ?? 0) + 1).toString()
+            );
+            setSearchParams(searchParams);
           }}
         >
           Get Next {entriesPerPage} Results
@@ -173,6 +122,4 @@ const MoviesList = () => {
       </Container>
     </div>
   );
-};
-
-export default MoviesList;
+}
